@@ -2,26 +2,34 @@
 
 import { useState } from "react";
 import { drawFortune } from "@/lib/fortunes";
+import type { HistoryEntry } from "@/lib/history";
 
 type Result = { fortune: string; luckyItem: { emoji: string; name: string } };
 
-export default function FortuneCard() {
+export default function FortuneCard({
+  onDraw,
+}: {
+  onDraw?: (entry: HistoryEntry) => void;
+}) {
   const [flipped, setFlipped] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
 
+  function draw() {
+    const drawn = drawFortune();
+    setResult(drawn);
+    setFlipped(true);
+    onDraw?.({ time: new Date().toISOString(), ...drawn });
+  }
+
   function handleClick() {
     if (!flipped) {
-      setResult(drawFortune());
-      setFlipped(true);
+      draw();
       return;
     }
 
     // already showing a result: flip back, then draw a fresh one
     setFlipped(false);
-    setTimeout(() => {
-      setResult(drawFortune());
-      setFlipped(true);
-    }, 400);
+    setTimeout(draw, 400);
   }
 
   return (
