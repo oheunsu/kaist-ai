@@ -86,11 +86,35 @@ export default function FortuneCard({
               {result?.fortune}
             </p>
             {result && (
-              <div className="flex flex-col items-center gap-1 rounded-2xl bg-white/60 px-5 py-3">
-                <span className="text-3xl">{result.luckyItem.emoji}</span>
-                <span className="text-sm font-medium text-zinc-700">
-                  행운의 아이템: {result.luckyItem.name}
-                </span>
+              <div className="relative w-56 overflow-hidden rounded-2xl bg-white/70 px-5 py-4 shadow-inner">
+                <svg
+                  viewBox="0 0 100 100"
+                  className="pointer-events-none absolute -right-5 -top-5 h-28 w-28 text-pink-300/60"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="50" cy="22" rx="14" ry="20" fill="currentColor" />
+                  <ellipse cx="50" cy="78" rx="14" ry="20" fill="currentColor" />
+                  <ellipse cx="22" cy="50" rx="20" ry="14" fill="currentColor" />
+                  <ellipse cx="78" cy="50" rx="20" ry="14" fill="currentColor" />
+                  <circle cx="50" cy="50" r="13" className="text-amber-300/80" fill="currentColor" />
+                </svg>
+                <svg
+                  viewBox="0 0 100 100"
+                  className="pointer-events-none absolute -bottom-6 -left-6 h-20 w-20 text-rose-200/50"
+                  aria-hidden="true"
+                >
+                  <ellipse cx="50" cy="26" rx="12" ry="18" fill="currentColor" />
+                  <ellipse cx="50" cy="74" rx="12" ry="18" fill="currentColor" />
+                  <ellipse cx="26" cy="50" rx="18" ry="12" fill="currentColor" />
+                  <ellipse cx="74" cy="50" rx="18" ry="12" fill="currentColor" />
+                  <circle cx="50" cy="50" r="11" className="text-amber-200/80" fill="currentColor" />
+                </svg>
+                <div className="relative flex flex-col items-center gap-1">
+                  <span className="text-3xl">{result.luckyItem.emoji}</span>
+                  <span className="text-sm font-medium text-zinc-700">
+                    행운의 아이템: {result.luckyItem.name}
+                  </span>
+                </div>
               </div>
             )}
           </div>
