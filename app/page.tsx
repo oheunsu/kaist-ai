@@ -9,20 +9,28 @@ import { loadHistory, saveHistory, type HistoryEntry } from "@/lib/history";
 import { supabase } from "@/lib/supabase/client";
 
 const NAME_STORAGE_KEY = "fortune-user-name";
+const BIRTHDATE_STORAGE_KEY = "fortune-user-birthdate";
 
 export default function Home() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [name, setName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     setHistory(loadHistory());
     setName(window.localStorage.getItem(NAME_STORAGE_KEY) ?? "");
+    setBirthdate(window.localStorage.getItem(BIRTHDATE_STORAGE_KEY) ?? "");
   }, []);
 
   function handleNameChange(value: string) {
     setName(value);
     window.localStorage.setItem(NAME_STORAGE_KEY, value);
+  }
+
+  function handleBirthdateChange(value: string) {
+    setBirthdate(value);
+    window.localStorage.setItem(BIRTHDATE_STORAGE_KEY, value);
   }
 
   function handleDraw(entry: HistoryEntry) {
@@ -63,7 +71,13 @@ export default function Home() {
             className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
           />
         )}
-        <FortuneCard onDraw={handleDraw} />
+        <input
+          type="date"
+          value={birthdate}
+          onChange={(e) => handleBirthdateChange(e.target.value)}
+          className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+        />
+        <FortuneCard onDraw={handleDraw} birthdate={birthdate} />
       </div>
       <FortuneHistory history={history} />
     </div>

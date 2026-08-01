@@ -8,8 +8,10 @@ type Result = { fortune: string; luckyItem: { emoji: string; name: string } };
 
 export default function FortuneCard({
   onDraw,
+  birthdate,
 }: {
   onDraw?: (entry: HistoryEntry) => void;
+  birthdate?: string;
 }) {
   const [flipped, setFlipped] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
@@ -30,7 +32,11 @@ export default function FortuneCard({
     setAiLoading(true);
     setAiError("");
     try {
-      const res = await fetch("/api/ai-fortune", { method: "POST" });
+      const res = await fetch("/api/ai-fortune", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ birthdate: birthdate || undefined }),
+      });
       if (!res.ok) throw new Error("request failed");
       const drawn: Result = await res.json();
       show(drawn);

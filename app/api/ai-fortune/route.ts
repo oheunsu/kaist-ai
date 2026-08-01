@@ -3,12 +3,18 @@ const SYSTEM_PROMPT =
   'fortune 값 안에서 줄과 줄 사이는 반드시 "\\n"으로 구분해. ' +
   '다른 설명 없이 반드시 아래 JSON 형식으로만 답해: {"fortune": string, "luckyItem": {"emoji": string, "name": string}}';
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return Response.json({ error: "OPENROUTER_API_KEY가 설정되지 않았습니다." }, { status: 500 });
     }
+
+    const { birthdate } = await request.json().catch(() => ({ birthdate: undefined }));
+
+    const userMessage = birthdate
+      ? `오늘의 운세를 새로 만들어줘. 이 사람의 생년월일은 ${birthdate}이야. 나이나 태어난 계절 같은 걸 살짝 자연스럽게 반영해줘.`
+      : "오늘의 운세를 새로 만들어줘.";
 
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -22,7 +28,7 @@ export async function POST() {
         temperature: 1,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: "오늘의 운세를 새로 만들어줘." },
+          { role: "user", content: userMessage },
         ],
       }),
     });
