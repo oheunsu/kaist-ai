@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import FortuneCard from "@/components/FortuneCard";
 import FortuneHistory from "@/components/FortuneHistory";
 import { loadHistory, saveHistory, type HistoryEntry } from "@/lib/history";
-import { saveFortuneAction } from "@/app/actions";
+import { supabase } from "@/lib/supabase/client";
 
 const NAME_STORAGE_KEY = "fortune-user-name";
 
@@ -29,9 +29,12 @@ export default function Home() {
       return next;
     });
 
-    saveFortuneAction(name.trim() || "익명", entry.fortune).catch((err) => {
-      console.error("Failed to save fortune to Supabase", err);
-    });
+    supabase
+      .from("fortunes")
+      .insert({ name: name.trim() || "익명", fortune: entry.fortune })
+      .then(({ error }) => {
+        if (error) console.error("Failed to save fortune to Supabase", error);
+      });
   }
 
   return (
