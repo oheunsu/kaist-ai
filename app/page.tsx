@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 import FortuneCard from "@/components/FortuneCard";
 import FortuneHistory from "@/components/FortuneHistory";
+import AuthPanel from "@/components/AuthPanel";
 import { loadHistory, saveHistory, type HistoryEntry } from "@/lib/history";
 import { supabase } from "@/lib/supabase/client";
 
@@ -11,6 +13,7 @@ const NAME_STORAGE_KEY = "fortune-user-name";
 export default function Home() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [name, setName] = useState("");
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     setHistory(loadHistory());
@@ -29,9 +32,11 @@ export default function Home() {
       return next;
     });
 
+    const savedName = session?.user.email ?? name.trim();
+
     supabase
       .from("fortunes")
-      .insert({ name: name.trim() || "익명", fortune: entry.fortune })
+      .insert({ name: savedName || "익명", fortune: entry.fortune })
       .then(({ error }) => {
         if (error) console.error("Failed to save fortune to Supabase", error);
       });
@@ -48,13 +53,16 @@ export default function Home() {
             매일 눌러보는 나만의 작은 운세 카드
           </p>
         </div>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => handleNameChange(e.target.value)}
-          placeholder="이름을 입력하세요"
-          className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
-        />
+        <AuthPanel onSessionChange={setSession} />
+        {!session && (
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            placeholder="이름을 입력하세요"
+            className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+          />
+        )}
         <FortuneCard onDraw={handleDraw} />
       </div>
       <FortuneHistory history={history} />
