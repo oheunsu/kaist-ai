@@ -26,25 +26,20 @@ export async function POST() {
       }),
     });
 
-    const bodyText = await res.text();
-
     if (!res.ok) {
-      return Response.json({ error: "OpenRouter 요청이 실패했습니다.", status: res.status, bodyText }, { status: 502 });
+      return Response.json({ error: "OpenRouter 요청이 실패했습니다." }, { status: 502 });
     }
 
-    const data = JSON.parse(bodyText);
+    const data = await res.json();
     const content = data.choices?.[0]?.message?.content ?? "";
 
     try {
       const parsed = JSON.parse(content);
       return Response.json(parsed);
     } catch {
-      return Response.json({ error: "AI 응답을 해석하지 못했습니다.", content }, { status: 502 });
+      return Response.json({ error: "AI 응답을 해석하지 못했습니다." }, { status: 502 });
     }
-  } catch (err) {
-    return Response.json(
-      { error: "DEBUG", message: err instanceof Error ? err.message : String(err) },
-      { status: 500 }
-    );
+  } catch {
+    return Response.json({ error: "AI 운세 생성 중 오류가 발생했습니다." }, { status: 500 });
   }
 }
