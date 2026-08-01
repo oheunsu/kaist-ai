@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 
@@ -13,6 +14,7 @@ export default function AuthPanel({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -30,6 +32,10 @@ export default function AuthPanel({
   }, []);
 
   async function handleSignup() {
+    if (!agreed) {
+      setMessage("개인정보 수집·이용에 동의해주세요.");
+      return;
+    }
     setMessage("");
     const { error } = await supabase.auth.signUp({ email, password });
     setMessage(error ? error.message : "가입 완료! 이메일 인증 후 로그인해주세요.");
@@ -77,6 +83,21 @@ export default function AuthPanel({
           className="rounded-full border border-zinc-300 bg-white px-4 py-1.5 text-sm text-zinc-900 outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
         />
       </div>
+      <label className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => setAgreed(e.target.checked)}
+          className="h-3.5 w-3.5"
+        />
+        <span>
+          (회원가입 시 필수)&nbsp;
+          <Link href="/privacy" target="_blank" className="underline hover:text-zinc-700 dark:hover:text-zinc-200">
+            개인정보처리방침
+          </Link>
+          에 동의합니다
+        </span>
+      </label>
       <div className="flex gap-2 text-sm">
         <button
           onClick={handleLogin}
