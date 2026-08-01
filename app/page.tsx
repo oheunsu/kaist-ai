@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import FortuneCard from "@/components/FortuneCard";
+import SajuCard from "@/components/SajuCard";
+import TodayBadge from "@/components/TodayBadge";
 import FortuneHistory from "@/components/FortuneHistory";
 import AuthPanel from "@/components/AuthPanel";
 import { loadHistory, saveHistory, type HistoryEntry } from "@/lib/history";
@@ -52,13 +54,21 @@ export default function Home() {
 
   return (
     <div className="flex flex-1 flex-col items-center gap-16 bg-gradient-to-b from-zinc-50 to-zinc-100 px-6 py-16 dark:from-black dark:to-zinc-900">
+      {/* 사주 보기 (생년월일 필수) */}
       <div className="flex flex-col items-center gap-10">
-        <div className="text-center">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <TodayBadge />
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-sky-400 to-blue-600 text-5xl shadow-lg ring-4 ring-white dark:ring-zinc-900">
+            🔮
+          </div>
+          <p className="text-sm font-semibold text-sky-600 dark:text-sky-400">
+            용하다 소문난 오늘의 운세
+          </p>
           <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            오늘의 운세
+            사주 보기
           </h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
-            매일 눌러보는 나만의 작은 운세 카드
+          <p className="max-w-sm text-sm text-zinc-500 dark:text-zinc-400">
+            이름과 생년월일을 알려주시면 사주를 반영한 오늘의 운세를 봐드려요.
           </p>
         </div>
         <AuthPanel onSessionChange={setSession} />
@@ -71,14 +81,35 @@ export default function Home() {
             className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
           />
         )}
-        <input
-          type="date"
-          value={birthdate}
-          onChange={(e) => handleBirthdateChange(e.target.value)}
-          className="w-64 rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
-        />
-        <FortuneCard onDraw={handleDraw} birthdate={birthdate} />
+        <div className="flex w-64 flex-col gap-1">
+          <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+            생년월일 <span className="text-rose-500">*필수</span>
+          </label>
+          <input
+            type="date"
+            value={birthdate}
+            onChange={(e) => handleBirthdateChange(e.target.value)}
+            className="w-full rounded-full border border-zinc-300 bg-white px-5 py-2 text-center text-sm text-zinc-900 shadow-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50"
+          />
+        </div>
+        <SajuCard birthdate={birthdate} onDraw={handleDraw} />
       </div>
+
+      <div className="h-px w-40 bg-zinc-200 dark:bg-zinc-800" />
+
+      {/* 가볍게 오늘의 운세 보기 */}
+      <div className="flex flex-col items-center gap-10">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            오늘의 운세 가볍게 보기
+          </h2>
+          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+            생년월일 없이 바로 카드를 뽑아보세요
+          </p>
+        </div>
+        <FortuneCard onDraw={handleDraw} />
+      </div>
+
       <FortuneHistory history={history} />
     </div>
   );
