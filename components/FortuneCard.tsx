@@ -13,12 +13,32 @@ export default function FortuneCard({
 }) {
   const [flipped, setFlipped] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
 
-  function draw() {
-    const drawn = drawFortune();
+  function show(drawn: Result) {
     setResult(drawn);
     setFlipped(true);
     onDraw?.({ time: new Date().toISOString(), ...drawn });
+  }
+
+  function draw() {
+    show(drawFortune());
+  }
+
+  async function drawWithAI() {
+    setAiLoading(true);
+    setAiError("");
+    try {
+      const res = await fetch("/api/ai-fortune", { method: "POST" });
+      if (!res.ok) throw new Error("request failed");
+      const drawn: Result = await res.json();
+      show(drawn);
+    } catch {
+      setAiError("AI 운세 생성에 실패했어요. 잠시 후 다시 시도해주세요.");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   function handleClick() {
@@ -30,6 +50,16 @@ export default function FortuneCard({
     // already showing a result: flip back, then draw a fresh one
     setFlipped(false);
     setTimeout(draw, 400);
+  }
+
+  function handleAIClick() {
+    if (!flipped) {
+      drawWithAI();
+      return;
+    }
+
+    setFlipped(false);
+    setTimeout(drawWithAI, 400);
   }
 
   return (
@@ -67,12 +97,22 @@ export default function FortuneCard({
         </div>
       </div>
 
-      <button
-        onClick={handleClick}
-        className="rounded-full bg-zinc-900 px-8 py-3 text-base font-semibold text-white shadow-md transition-colors hover:bg-zinc-700 active:scale-95 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        {flipped ? "다시 뽑기" : "카드 뒤집기"}
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={handleClick}
+          className="rounded-full bg-zinc-900 px-8 py-3 text-base font-semibold text-white shadow-md transition-colors hover:bg-zinc-700 active:scale-95 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          {flipped ? "다시 뽑기" : "카드 뒤집기"}
+        </button>
+        <button
+          onClick={handleAIClick}
+          disabled={aiLoading}
+          className="rounded-full border border-zinc-300 bg-white px-8 py-3 text-base font-semibold text-zinc-700 shadow-md transition-colors hover:bg-zinc-100 active:scale-95 disabled:opacity-60 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+        >
+          {aiLoading ? "생성 중..." : "AI 운세 생성"}
+        </button>
+      </div>
+      {aiError && <p className="text-sm text-red-500">{aiError}</p>}
     </div>
   );
 }
