@@ -82,7 +82,7 @@ export default function FortuneCard({
           {/* back */}
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-5 rounded-3xl bg-gradient-to-br from-amber-300 to-pink-400 p-8 text-center shadow-xl [backface-visibility:hidden] [transform:rotateY(180deg)]">
             <span className="text-5xl">✨</span>
-            <p className="text-lg font-semibold leading-relaxed text-zinc-900">
+            <p className="whitespace-pre-line text-lg font-semibold leading-relaxed text-zinc-900">
               {result?.fortune}
             </p>
             {result && (
