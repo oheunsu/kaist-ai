@@ -69,7 +69,7 @@ export default function SajuCard({
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-3xl bg-gradient-to-br from-sky-500 to-blue-700 p-8 text-center shadow-xl [backface-visibility:hidden]">
             <span className="text-6xl">🔮</span>
             <h2 className="text-xl font-bold text-white">
-              카드를 눌러 오늘의 운세 보기
+              카드를 눌러 오늘의 사주보기
             </h2>
             <p className="text-sm text-sky-100">동양 사주 · 서양 별자리 종합</p>
           </div>
